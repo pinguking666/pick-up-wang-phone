@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>iPhone</title>
+<style>
+/* ================= 基础 ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  display:flex;align-items:center;justify-content:center;
+  background:#0a0a0c;
+  background-image:radial-gradient(circle at 50% -10%,#2a2a33 0%,#0a0a0c 62%);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+  overflow:hidden;
+  user-select:none;-webkit-user-select:none;
+}
+.stage{display:flex;align-items:center;justify-content:center;}
+
+.phone{
+  position:relative;
+  width:min(390px,94vw,54vh);
+  aspect-ratio:390/844;
+  background:linear-gradient(150deg,#4a4a50,#141418 22%,#000 55%,#1c1c20);
+  border-radius:13.5%/6.2%;
+  padding:1.7%;
+  box-shadow:0 50px 90px -34px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.07),0 0 60px rgba(120,140,255,.06);
+}
+.screen{
+  position:relative;width:100%;height:100%;
+  border-radius:12%/5.6%;
+  overflow:hidden;background:#000;
+  isolation:isolate;
+}
+
+/* ================= 页面通用 ================= */
+.page{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  background:#000;overflow:hidden;
+  opacity:0;pointer-events:none;
+  transform:translateY(16px) scale(.994);
+  transition:opacity .34s ease,transform .48s cubic-bezier(.32,.72,0,1);
+}
+.page.active{opacity:1;pointer-events:auto;transform:none;z-index:3;}
+
+/* 状态栏 */
+.status-bar{
+  position:relative;z-index:30;flex:0 0 auto;
+  height:50px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;font-size:15px;font-weight:600;letter-spacing:.2px;
+}
+.sb-light{color:#fff;}
+.sb-dark{color:#0a0a0a;}
+.sb-icons{display:flex;align-items:center;gap:5px;}
+.sb-net{font-size:12.5px;font-weight:600;letter-spacing:-.2px;}
+.sb-time{font-variant-numeric:tabular-nums;}
+
+/* Home 指示条 */
+.home-indicator{width:134px;height:5px;border-radius:3px;margin:8px auto 6px;flex:0 0 auto;}
+.home-indicator.light{background:rgba(255,255,255,.88);}
+.home-indicator.dark{background:rgba(0,0,0,.85);}
+
+/* ================= 锁屏 ================= */
+.page-lock{background:#0d0d14;}
+.lock-wallpaper{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;}
+.lock-scrim{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(0,0,0,.30) 0%,rgba(0,0,0,.02) 24%,rgba(0,0,0,0) 48%,rgba(0,0,0,.42) 78%,rgba(0,0,0,.62) 100%);}
+.lock-inner{position:relative;z-index:3;display:flex;flex-direction:column;height:100%;}
+.lock-top{display:flex;flex-direction:column;align-items:center;padding-top:4px;}
+.lock-date{color:rgba(255,255,255,.96);font-size:16px;font-weight:600;letter-spacing:.4px;
+  text-shadow:0 1px 10px rgba(0,0,0,.35);}
+.lock-clock{color:#fff;font-size:84px;font-weight:700;line-height:1.02;letter-spacing:-2.5px;
+  font-variant-numeric:tabular-nums;text-shadow:0 2px 26px rgba(0,0,0,.35);margin-top:2px;}
+
+.lock-widgets{display:flex;gap:9px;margin-top:12px;align-items:center;}
+.lw-pill{
+  height:32px;padding:0 12px;border-radius:16px;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.20);
+  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);
+  color:#fff;font-size:13px;font-weight:600;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 4px 14px rgba(0,0,0,.14);
+}
+.lw-ring{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.20);
+  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 4px 14px rgba(0,0,0,.14);
+}
+
+.lock-bottom{margin-top:auto;padding:0 14px 4px;}
+.music-card{
+  border-radius:26px;padding:14px 14px 10px;
+  background:rgba(255,255,255,.20);
+  -webkit-backdrop-filter:blur(34px) saturate(180%);backdrop-filter:blur(34px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),0 16px 40px -18px rgba(0,0,0,.6);
+  color:#fff;
+}
+.mc-row{display:flex;align-items:center;gap:11px;}
+.mc-cover{width:46px;height:46px;border-radius:11px;object-fit:cover;flex:0 0 auto;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);background:linear-gradient(135deg,#a8c0ff,#3f2b96);}
+.mc-meta{flex:1;min-width:0;}
+.mc-title{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mc-artist{font-size:11.5px;color:rgba(255,255,255,.72);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mc-eq{display:flex;align-items:flex-end;gap:2px;height:14px;opacity:.85;}
+.mc-eq i{width:3px;border-radius:2px;background:#fff;display:block;animation:eq .9s ease-in-out infinite;}
+.mc-eq i:nth-child(1){height:6px;animation-delay:0s;}
+.mc-eq i:nth-child(2){height:12px;animation-delay:.2s;}
+.mc-eq i:nth-child(3){height:8px;animation-delay:.4s;}
+@keyframes eq{0%,100%{transform:scaleY(.5);}50%{transform:scaleY(1);}}
+
+.mc-progress{height:3px;border-radius:2px;background:rgba(255,255,255,.28);margin-top:12px;overflow:hidden;}
+.mc-progress span{display:block;height:100%;width:34%;border-radius:2px;background:rgba(255,255,255,.92);}
+.mc-times{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.62);margin-top:5px;
+  font-variant-numeric:tabular-nums;}
+.mc-controls{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 0;}
+.mc-controls button{
+  background:none;border:none;padding:6px;display:flex;align-items:center;justify-content:center;
+  color:#fff;cursor:pointer;opacity:.95;transition:transform .12s,opacity .12s;
+}
+.mc-controls button:active{transform:scale(.88);opacity:.7;}
+.mc-play{
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+}
+
+.lock-actions{display:flex;justify-content:space-between;padding:16px 26px 0;}
+.round-btn{
+  width:48px;height:48px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.20);
+  -webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
+  display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;
+  transition:transform .14s,background .14s;
+}
+.round-btn:active{transform:scale(.92);background:rgba(255,255,255,.42);}
+.lock-hint{text-align:center;font-size:11.5px;color:rgba(255,255,255,.7);margin-top:10px;letter-spacing:.3px;}
+
+/* ================= 密码页 ================= */
+.page-pass{background:#0b0b0f;}
+.pass-bg{
+  position:absolute;inset:-40px;
+  background-image:url("锁屏壁纸.jpg"),linear-gradient(155deg,#3c4a6b,#171b26 55%,#0b0d12);
+  background-size:cover,cover;background-position:center,center;
+  filter:blur(26px) brightness(.52) saturate(1.1);
+  z-index:0;
+}
+.pass-scrim{position:absolute;inset:0;z-index:1;background:rgba(0,0,0,.24);}
+.dynamic-island{
+  position:absolute;top:11px;left:50%;transform:translateX(-50%);
+  width:112px;height:33px;border-radius:20px;background:#000;z-index:40;
+}
+.pass-inner{position:relative;z-index:5;display:flex;flex-direction:column;height:100%;}
+.pass-top{display:flex;flex-direction:column;align-items:center;padding-top:24px;color:#fff;}
+.pass-lock{margin-bottom:12px;opacity:.95;}
+.pass-tip{font-size:14px;color:rgba(255,255,255,.9);letter-spacing:.2px;}
+.pass-dots{display:flex;gap:19px;margin-top:22px;}
+.pass-dot{width:13px;height:13px;border-radius:50%;border:1.6px solid rgba(255,255,255,.92);
+  transition:background .18s,transform .18s;}
+.pass-dot.filled{background:#fff;transform:scale(1.06);}
+.pass-dots.shake{animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-9px);}40%{transform:translateX(9px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
+
+.keypad{
+  margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);
+  gap:13px 26px;padding:0 36px;justify-items:center;
+}
+.key{
+  width:74px;height:74px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),0 6px 18px rgba(0,0,0,.22);
+  color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:transform .1s,background .12s;font-family:inherit;
+}
+.key:active{transform:scale(.94);background:rgba(255,255,255,.42);}
+.k-num{font-size:31px;font-weight:400;line-height:1;letter-spacing:.5px;}
+.k-let{font-size:9.5px;letter-spacing:1.6px;font-weight:600;margin-top:2px;opacity:.92;}
+.key-ghost{background:transparent;box-shadow:none;font-size:15px;opacity:.9;}
+.key-ghost:active{background:rgba(255,255,255,.14);}
+.pass-footer{
+  display:flex;justify-content:space-between;padding:20px 38px 0;
+  color:#fff;font-size:16px;letter-spacing:.2px;
+}
+.pass-footer span{cursor:pointer;}
+
+/* ================= 桌面 ================= */
+.page-home{
+  background:
+    radial-gradient(120% 70% at 0% 0%,#eef1ff 0%,rgba(238,241,255,0) 52%),
+    radial-gradient(100% 60% at 100% 10%,#ffeef7 0%,rgba(255,238,247,0) 50%),
+    linear-gradient(180deg,#fbfbfd 0%,#f2f2f6 100%);
+}
+.home-scroll{
+  flex:1;overflow-y:auto;overscroll-behavior:contain;
+  padding:2px 16px 6px;display:flex;flex-direction:column;gap:11px;
+  -webkit-overflow-scrolling:touch;
+}
+.home-scroll::-webkit-scrollbar{display:none;}
+
+/* 天气小组件 */
+.weather-widget{
+  border-radius:22px;padding:13px 15px 12px;color:#fff;
+  background:linear-gradient(158deg,#33456e 0%,#222b45 45%,#141824 100%);
+  box-shadow:0 14px 30px -18px rgba(20,30,60,.85),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.ww-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.ww-city{font-size:13.5px;font-weight:600;letter-spacing:.3px;display:flex;align-items:center;gap:4px;opacity:.95;}
+.ww-temp{font-size:38px;font-weight:300;line-height:1.1;letter-spacing:-1.5px;margin-top:1px;}
+.ww-cond{font-size:12px;color:rgba(255,255,255,.68);margin-top:-2px;}
+.ww-sun{font-size:30px;line-height:1;filter:drop-shadow(0 3px 8px rgba(255,200,80,.5));}
+.ww-days{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.12);}
+.ww-day{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.ww-day span:first-child{font-size:10.5px;color:rgba(255,255,255,.65);}
+.ww-day .wd-ic{font-size:15px;line-height:1;}
+.ww-day .wd-t{font-size:12px;font-weight:600;}
+.ww-note{font-size:11px;color:rgba(255,255,255,.62);margin-top:9px;letter-spacing:.1px;}
+
+/* 日程小组件 */
+.events-widget{
+  border-radius:22px;padding:12px 15px 13px;
+  background:rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:0 10px 26px -18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.ew-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px;}
+.ew-title{font-size:11px;font-weight:700;color:#ff3b30;letter-spacing:.6px;text-transform:uppercase;}
+.ew-date{font-size:11px;color:#8e8e93;font-weight:500;}
+.ew-item{display:flex;align-items:center;gap:9px;padding:5px 0;}
+.ew-bar{width:3px;height:26px;border-radius:2px;flex:0 0 auto;}
+.ew-name{font-size:13.5px;font-weight:600;color:#1c1c1e;letter-spacing:.1px;}
+.ew-sub{font-size:11px;color:#8e8e93;margin-top:1px;}
+
+/* 图标 */
+.icon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 4px;}
+.app-icon{
+  background:none;border:none;padding:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;font-family:inherit;
+  transition:transform .14s;
+}
+.app-icon:active{transform:scale(.9);}
+.icon-tile{
+  width:56px;height:56px;border-radius:15px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 16px -9px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.45);
+  overflow:hidden;
+}
+.icon-label{font-size:10.5px;color:#1c1c1e;font-weight:400;letter-spacing:.1px;}
+
+/* 月历小组件 */
+.cal-widget{
+  width:60%;align-self:flex-end;border-radius:20px;padding:10px 12px 11px;
+  background:rgba(255,255,255,.78);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:0 10px 26px -18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.cw-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;}
+.cw-month{font-size:12px;font-weight:700;color:#ff3b30;letter-spacing:.4px;}
+.cw-year{font-size:10px;color:#8e8e93;}
+.cw-week{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:3px;}
+.cw-week span{font-size:8.5px;color:#a1a1a6;text-align:center;font-weight:500;}
+.cw-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;}
+.cw-grid span{
+  font-size:9.5px;color:#3a3a3c;text-align:center;line-height:1.55;font-variant-numeric:tabular-nums;
+  border-radius:50%;height:15px;display:flex;align-items:center;justify-content:center;
+}
+.cw-grid span.today{background:#ff3b30;color:#fff;font-weight:700;}
+.cw-grid span.mute{color:#d1d1d6;}
+
+/* 搜索 */
+.search-bar{
+  height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:rgba(118,118,128,.14);
+  color:#8e8e93;font-size:13.5px;letter-spacing:.2px;cursor:pointer;
+}
+
+/* Dock */
+.dock-wrap{flex:0 0 auto;padding:6px 12px 2px;}
+.dock{
+  border-radius:30px;padding:9px 10px;
+  background:rgba(255,255,255,.55);
+  -webkit-backdrop-filter:blur(34px) saturate(190%);backdrop-filter:blur(34px) saturate(190%);
+  box-shadow:0 14px 30px -18px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.85);
+  display:flex;justify-content:space-around;align-items:center;
+}
+.dock .app-icon{gap:0;}
+.dock .icon-tile{width:52px;height:52px;border-radius:14px;}
+
+/* ================= 备忘录 ================= */
+.page-notes{background:#fff;}
+.notes-nav{
+  flex:0 0 auto;height:44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;color:#666;
+}
+.notes-nav .nav-side{display:flex;align-items:center;gap:14px;}
+.nav-btn{background:none;border:none;padding:4px;cursor:pointer;color:#666;display:flex;
+  align-items:center;justify-content:center;transition:opacity .15s;}
+.nav-btn:active{opacity:.45;}
+.notes-scroll{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:0 20px 20px;
+  -webkit-overflow-scrolling:touch;}
+.notes-scroll::-webkit-scrollbar{display:none;}
+.notes-time{font-size:12px;color:#888;margin:4px 0 14px;letter-spacing:.2px;}
+.notes-title{font-size:27px;font-weight:700;color:#222;letter-spacing:-.4px;margin-bottom:20px;}
+.notes-body{font-size:15px;line-height:1.82;color:#333;white-space:pre-wrap;word-break:break-word;
+  letter-spacing:.1px;padding-bottom:30px;}
+.notes-toolbar{
+  flex:0 0 auto;margin:0 12px 8px;height:48px;border-radius:24px;
+  background:rgba(255,255,255,.92);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  box-shadow:0 6px 22px -10px rgba(0,0,0,.22),inset 0 0 0 .5px rgba(0,0,0,.06);
+  display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 18px;
+}
+.nt-left{display:flex;align-items:center;gap:22px;}
+.nt-btn{background:none;border:none;padding:6px;cursor:pointer;color:#666;display:flex;
+  align-items:center;justify-content:center;transition:opacity .15s;}
+.nt-btn:active{opacity:.4;}
+.nt-edit{
+  width:34px;height:34px;border-radius:9px;background:#f2f2f7;
+  display:flex;align-items:center;justify-content:center;color:#666;
+}
+
+/* ================= 照片 ================= */
+.page-photos{background:#fff;}
+.ph-nav{flex:0 0 auto;padding:0 16px 10px;}
+.ph-title{font-size:32px;font-weight:700;color:#000;letter-spacing:-.7px;line-height:1.15;}
+.ph-date{font-size:12px;color:#8e8e93;margin-top:2px;letter-spacing:.2px;}
+.ph-actions{display:flex;align-items:center;gap:12px;margin-top:10px;justify-content:flex-end;}
+.ph-search{
+  width:30px;height:30px;border-radius:50%;background:#0a84ff;color:#fff;border:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 3px 10px -3px rgba(10,132,255,.65);
+}
+.ph-select{background:none;border:none;color:#0a84ff;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;}
+.ph-avatar{position:relative;width:30px;height:30px;border-radius:50%;cursor:pointer;
+  background:linear-gradient(140deg,#c9d6ff,#a3b6f7);overflow:visible;}
+.ph-avatar::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(140deg,#c9d6ff,#a3b6f7);}
+.ph-badge{
+  position:absolute;top:-2px;right:-3px;width:14px;height:14px;border-radius:50%;
+  background:#ff3b30;color:#fff;font-size:10px;font-weight:700;line-height:14px;text-align:center;
+  border:1.5px solid #fff;z-index:2;
+}
+.photo-grid{
+  flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(5,1fr);
+  gap:2px;padding:2px;align-content:start;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.photo-grid::-webkit-scrollbar{display:none;}
+.photo-cell{position:relative;aspect-ratio:1/1;overflow:hidden;background:#f0f0f2;border-radius:2px;cursor:pointer;}
+.photo-cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s;}
+.photo-cell:active img{transform:scale(1.07);}
+.ph-filter{
+  flex:0 0 auto;margin:8px 14px 0;height:40px;border-radius:20px;background:#f2f2f7;
+  display:flex;align-items:center;justify-content:space-between;padding:0 6px;
+}
+.pf-sort,.pf-close{
+  width:30px;height:30px;border-radius:50%;background:#fff;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#8e8e93;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+.pf-tabs{display:flex;align-items:center;gap:4px;}
+.pf-tab{
+  border:none;background:none;font-family:inherit;font-size:13px;color:#8e8e93;
+  padding:5px 14px;border-radius:14px;cursor:pointer;transition:.18s;font-weight:500;
+}
+.pf-tab.on{background:#1c1c1e;color:#fff;font-weight:600;}
+.photo-viewer{
+  position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.95);
+  display:none;align-items:center;justify-content:center;padding:14px;
+}
+.photo-viewer.show{display:flex;}
+.photo-viewer img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;
+  animation:zoomIn .25s ease;}
+@keyframes zoomIn{from{transform:scale(.86);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+/* ================= 微信列表 ================= */
+.page-wechat{background:#fff;}
+.wx-nav{
+  flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;position:relative;
+}
+.wx-nav .wx-title{position:absolute;left:50%;transform:translateX(-50%);
+  font-size:17px;font-weight:600;color:#1a1a1a;letter-spacing:.4px;}
+.wx-star{background:none;border:none;color:#1a1a1a;padding:4px;cursor:pointer;display:flex;}
+.wx-plus{
+  width:30px;height:30px;border-radius:50%;background:none;border:none;cursor:pointer;
+  color:#1a1a1a;display:flex;align-items:center;justify-content:center;
+}
+.wx-list{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+.wx-list::-webkit-scrollbar{display:none;}
+.wx-item{
+  display:flex;align-items:center;gap:12px;padding:11px 16px;position:relative;
+  cursor:pointer;transition:background .15s;
+}
+.wx-item:active{background:#f2f2f2;}
+.wx-item::after{content:"";position:absolute;left:74px;right:0;bottom:0;height:.5px;background:#eeeeee;}
+.wx-ava{width:46px;height:46px;border-radius:8px;object-fit:cover;flex:0 0 auto;background:#e6e6e6;}
+.wx-main{flex:1;min-width:0;padding-bottom:2px;}
+.wx-row1{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.wx-name{font-size:16px;color:#1a1a1a;font-weight:500;letter-spacing:.2px;
+  display:flex;align-items:center;gap:5px;}
+.wx-time{font-size:11.5px;color:#b2b2b2;flex:0 0 auto;}
+.wx-row2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:3px;}
+.wx-preview{font-size:13px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wx-badge{
+  min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#ff3b30;color:#fff;
+  font-size:11px;font-weight:600;line-height:18px;text-align:center;flex:0 0 auto;
+}
+.wx-tabbar{
+  flex:0 0 auto;height:56px;display:flex;background:#f7f7f7;
+  border-top:.5px solid #e2e2e2;align-items:center;
+}
+.wx-tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:10px;color:#7a7a7a;cursor:pointer;
+}
+.wx-tab.on{color:#07c160;}
+.wx-tab svg{display:block;}
+
+/* ================= 聊天 ================= */
+.page-chat{background:#171717;}
+.chat-nav{
+  flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;background:#1c1c1c;border-bottom:.5px solid #2a2a2a;position:relative;
+}
+.chat-nav .chat-title{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:16.5px;font-weight:600;color:#fff;letter-spacing:.3px;
+}
+.chat-nav button{background:none;border:none;color:#e5e5e5;padding:4px;cursor:pointer;display:flex;}
+.chat-body{
+  flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 12px 16px;
+  background-color:#171717;
+  background-image:url("聊天背景.png");
+  background-size:cover;background-position:center;
+  -webkit-overflow-scrolling:touch;
+}
+.chat-body::-webkit-scrollbar{display:none;}
+.chat-date{text-align:center;margin:14px 0 12px;}
+.chat-date span{
+  display:inline-block;font-size:11px;color:#9a9a9a;background:rgba(0,0,0,.32);
+  padding:3px 10px;border-radius:6px;letter-spacing:.3px;
+}
+.msg-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;}
+/* 右方消息：气泡靠右，头像在最右侧 */
+.msg-row.right{justify-content:flex-end;}
+.msg-avatar{width:36px;height:36px;border-radius:7px;object-fit:cover;flex:0 0 auto;background:#333;}
+.bubble{
+  position:relative;max-width:70%;padding:9px 12px;border-radius:7px;
+  font-size:14.5px;line-height:1.5;color:#fff;word-break:break-word;letter-spacing:.2px;
+}
+.bubble.left{background:#2d2d2d;}
+.bubble.right{background:#07c160;}
+.bubble.left::before{
+  content:"";position:absolute;left:-5px;top:12px;width:0;height:0;
+  border-top:4.5px solid transparent;border-bottom:4.5px solid transparent;
+  border-right:6px solid #2d2d2d;
+}
+.bubble.right::after{
+  content:"";position:absolute;right:-5px;top:12px;width:0;height:0;
+  border-top:4.5px solid transparent;border-bottom:4.5px solid transparent;
+  border-left:6px solid #07c160;
+}
+.chat-input-bar{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding:8px 12px 6px;background:#1c1c1c;border-top:.5px solid #2a2a2a;
+}
+.ci-btn{background:none;border:none;color:#d0d0d0;padding:4px;cursor:pointer;display:flex;}
+.ci-field{
+  flex:1;height:36px;border-radius:8px;background:#2a2a2a;
+}
+
+/* ================= 豆瓣 ================= */
+.page-douban{background:#fff;}
+.db-nav{
+  flex:0 0 auto;height:48px;background:#4080dd;display:flex;align-items:center;
+  padding:0 12px;gap:10px;color:#fff;position:relative;
+}
+.db-nav .db-back{background:none;border:none;color:#fff;padding:4px;cursor:pointer;display:flex;}
+.db-group{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15;}
+.db-group-name{font-size:15.5px;font-weight:600;letter-spacing:.3px;}
+.db-group-num{font-size:10.5px;opacity:.85;margin-top:2px;}
+.db-more{background:none;border:none;color:#fff;padding:4px;cursor:pointer;display:flex;}
+.db-scroll{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding-bottom:8px;}
+.db-scroll::-webkit-scrollbar{display:none;}
+.db-post-head{display:flex;align-items:center;gap:10px;padding:14px 16px 0;}
+.db-ava{width:38px;height:38px;border-radius:50%;background:#000;flex:0 0 auto;}
+.db-user{font-size:14.5px;color:#222;font-weight:600;}
+.db-meta{font-size:11px;color:#9b9b9b;margin-top:2px;}
+.db-title{font-size:17.5px;font-weight:700;color:#111;padding:14px 16px 0;line-height:1.42;
+  letter-spacing:-.2px;}
+.db-content{font-size:14.5px;color:#333;line-height:1.75;padding:10px 16px 0;letter-spacing:.1px;}
+.db-actions{
+  display:flex;gap:22px;padding:14px 16px;font-size:13px;color:#8a8a8a;
+  border-bottom:8px solid #f5f5f7;
+}
+.db-actions span{cursor:pointer;}
+.db-actions span:active{opacity:.5;}
+.db-comments-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px 8px;font-size:13.5px;color:#333;font-weight:600;
+}
+.db-lz{font-size:11.5px;color:#4080dd;border:1px solid #cfe0f7;background:#f2f7fd;
+  padding:2px 9px;border-radius:10px;font-weight:500;}
+.cmt{display:flex;gap:10px;padding:12px 16px;border-bottom:.5px solid #f0f0f2;}
+.cmt-ava{width:32px;height:32px;border-radius:50%;flex:0 0 auto;
+  background:linear-gradient(140deg,#d7e3f7,#b9c9e8);display:flex;align-items:center;
+  justify-content:center;font-size:12px;color:#5b7296;font-weight:600;}
+.cmt-main{flex:1;min-width:0;}
+.cmt-row1{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.cmt-name{font-size:13px;color:#4a7ab5;font-weight:500;}
+.cmt-dot{width:5px;height:5px;border-radius:50%;background:#ff9500;flex:0 0 auto;}
+.cmt-time{font-size:11px;color:#b0b0b0;}
+.cmt-text{font-size:14px;color:#222;line-height:1.62;margin-top:4px;letter-spacing:.1px;}
+.cmt-quote{
+  background:#f5f5f7;border-radius:8px;padding:8px 10px;margin-top:6px;
+  font-size:12.5px;color:#7a7a7a;line-height:1.55;
+}
+.cmt-quote b{color:#4a7ab5;font-weight:500;}
+.cmt-like{
+  display:flex;justify-content:flex-end;align-items:center;gap:4px;
+  font-size:11.5px;color:#b0b0b0;margin-top:6px;
+}
+.db-inputbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:16px;
+  padding:9px 16px 10px;border-top:.5px solid #ececee;background:#fff;
+}
+.db-input{
+  flex:1;height:34px;border-radius:17px;background:#f2f2f5;
+  display:flex;align-items:center;padding:0 14px;font-size:13.5px;color:#a5a5a8;
+}
+.db-ibtn{background:none;border:none;color:#8a8a8a;display:flex;padding:2px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<script>
+/* ---------- 图片兜底 ---------- */
+var PALETTES=[
+  ['#FFC7D3','#FFE3C8'],['#C4E0FF','#C9F0E2'],['#D5CCF7','#EBD6F7'],
+  ['#FFD9B8','#FFC0B8'],['#C4F0DC','#D3E3FA'],['#FFD1E3','#D6C8FF'],
+  ['#BEE3F8','#C8F7DC'],['#F7D6C0','#F7C0D6']
+];
+function imgFallback(el,seed){
+  el.onerror=null;
+  var p=PALETTES[(seed||0)%PALETTES.length];
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">'+
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'+
+    '<stop offset="0" stop-color="'+p[0]+'"/><stop offset="1" stop-color="'+p[1]+'"/>'+
+    '</linearGradient></defs><rect width="400" height="400" fill="url(#g)"/></svg>';
+  el.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+function avatarFallback(el){
+  el.onerror=null;
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120">'+
+    '<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1">'+
+    '<stop offset="0" stop-color="#9EC3F0"/><stop offset="1" stop-color="#7E9FE0"/>'+
+    '</linearGradient></defs><rect width="120" height="120" fill="url(#a)"/>'+
+    '<circle cx="60" cy="47" r="19" fill="#fff" opacity=".85"/>'+
+    '<ellipse cx="60" cy="102" rx="31" ry="24" fill="#fff" opacity=".85"/></svg>';
+  el.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+function wallpaperFallback(el){
+  el.onerror=null;
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="400" height="860">'+
+    '<defs><linearGradient id="w" x1="0" y1="0" x2=".7" y2="1">'+
+    '<stop offset="0" stop-color="#5B4B8A"/><stop offset=".45" stop-color="#2E3560"/>'+
+    '<stop offset="1" stop-color="#131622"/></linearGradient>'+
+    '<radialGradient id="r" cx=".72" cy=".18" r=".55">'+
+    '<stop offset="0" stop-color="#FFB8D0" stop-opacity=".55"/>'+
+    '<stop offset="1" stop-color="#FFB8D0" stop-opacity="0"/></radialGradient></defs>'+
+    '<rect width="400" height="860" fill="url(#w)"/>'+
+    '<rect width="400" height="860" fill="url(#r)"/></svg>';
+  el.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+</script>
+
+<div class="stage">
+<div class="phone">
+<div class="screen" id="screen">
+
+  <!-- ================= 1. 锁屏 ================= -->
+  <div class="page page-lock active" id="pageLock">
+    <img class="lock-wallpaper" src="锁屏壁纸.jpg" alt="" onerror="wallpaperFallback(this)">
+    <div class="lock-scrim"></div>
+
+    <div class="lock-inner">
+      <div class="status-bar sb-light">
+        <div class="sb-time">9:41</div>
+        <div class="sb-icons">
+          <svg viewBox="0 0 18 12" width="17" height="11">
+            <rect x="0" y="7.6" width="3" height="4.4" rx="1" fill="currentColor"/>
+            <rect x="4.6" y="5.3" width="3" height="6.7" rx="1" fill="currentColor"/>
+            <rect x="9.2" y="2.7" width="3" height="9.3" rx="1" fill="currentColor"/>
+            <rect x="13.8" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+          </svg>
+          <span class="sb-net">5G</span>
+          <svg viewBox="0 0 27 13" width="26" height="12.5">
+            <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+              stroke="currentColor" stroke-opacity=".4" stroke-width="1.1"/>
+            <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+            <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".45"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="lock-top">
+        <div class="lock-date" id="lockDate">4月28日 星期一</div>
+        <div class="lock-clock"><span id="clockH">09</span>:<span id="clockM">41</span></div>
+
+        <div class="lock-widgets">
+          <div class="lw-pill">
+            <svg viewBox="0 0 27 13" width="21" height="11">
+              <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+                stroke="#fff" stroke-opacity=".55" stroke-width="1.1"/>
+              <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="#fff"/>
+              <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="#fff" fill-opacity=".6"/>
+            </svg>
+            <span>27%</span>
+          </div>
+
+          <div class="lw-ring">
+            <svg viewBox="0 0 36 36" width="22" height="22">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,.26)" stroke-width="4.5"/>
+              <circle cx="18" cy="18" r="14" fill="none" stroke="#7FE3A6" stroke-width="4.5"
+                stroke-linecap="round" stroke-dasharray="57.2 88" transform="rotate(-90 18 18)"/>
+            </svg>
+          </div>
+
+          <div class="lw-ring">
+            <svg viewBox="0 0 36 36" width="22" height="22">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,.26)" stroke-width="4.5"/>
+              <circle cx="18" cy="18" r="14" fill="none" stroke="#7FC0FF" stroke-width="4.5"
+                stroke-linecap="round" stroke-dasharray="30.8 88" transform="rotate(-90 18 18)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="lock-bottom">
+        <div class="music-card">
+          <div class="mc-row">
+            <img class="mc-cover" src="照片2.jpg" alt="" onerror="imgFallback(this,4)">
+            <div class="mc-meta">
+              <div class="mc-title">直到死亡将我们分开</div>
+              <div class="mc-artist">王橹杰 · 穆祉丞</div>
+            </div>
+            <div class="mc-eq"><i></i><i></i><i></i></div>
+          </div>
+          <div class="mc-progress"><span></span></div>
+          <div class="mc-times"><span>1:12</span><span>-2:34</span></div>
+          <div class="mc-controls">
+            <button aria-label="收藏">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.7" stroke-linejoin="round">
+                <path d="M12 3.6l2.5 5.1 5.6.8-4 3.9.95 5.6L12 16.3l-5.05 2.7.95-5.6-4-3.9 5.6-.8z"/>
+              </svg>
+            </button>
+            <button aria-label="回退15秒">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3.4 12a8.6 8.6 0 1 0 2.6-6.2"/>
+                <path d="M3.2 4.4v4.2h4.2"/>
+                <text x="12" y="15.4" text-anchor="middle" font-size="7.6" fill="currentColor"
+                  stroke="none" font-weight="600">15</text>
+              </svg>
+            </button>
+            <button class="mc-play" aria-label="暂停">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6.5" y="4.5" width="4" height="15" rx="1.4"/>
+                <rect x="13.5" y="4.5" width="4" height="15" rx="1.4"/>
+              </svg>
+            </button>
+            <button aria-label="快进30秒">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.6 12a8.6 8.6 0 1 1-2.6-6.2"/>
+                <path d="M20.8 4.4v4.2h-4.2"/>
+                <text x="12" y="15.4" text-anchor="middle" font-size="7.6" fill="currentColor"
+                  stroke="none" font-weight="600">30</text>
+              </svg>
+            </button>
+            <button aria-label="隔空播放">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.6" stroke-linejoin="round">
+                <path d="M5 16.5V7.4A1.4 1.4 0 0 1 6.4 6h11.2A1.4 1.4 0 0 1 19 7.4v9.1"/>
+                <path d="M8.6 16.5h6.8L12 12z" fill="currentColor" stroke="none"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="lock-actions">
+          <button class="round-btn" aria-label="手电筒">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 3h6v3.2l-1.3 2.1v11.3a1.7 1.7 0 0 1-3.4 0V8.3L9 6.2z"/>
+              <path d="M12 12.4v3.2"/>
+            </svg>
+          </button>
+          <button class="round-btn" aria-label="相机">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.7" stroke-linejoin="round">
+              <path d="M3 8.6A1.8 1.8 0 0 1 4.8 6.8h2.3l1.3-2h7.2l1.3 2h2.3A1.8 1.8 0 0 1 21 8.6v8.6a1.8 1.8 0 0 1-1.8 1.8H4.8A1.8 1.8 0 0 1 3 17.2z"/>
+              <circle cx="12" cy="12.8" r="3.5"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="lock-hint">向上轻扫以解锁</div>
+        <div class="home-indicator light"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. 密码页 ================= -->
+  <div class="page page-pass" id="pagePass">
+    <div class="pass-bg"></div>
+    <div class="pass-scrim"></div>
+    <div class="dynamic-island"></div>
+
+    <div class="pass-inner">
+      <div class="status-bar sb-light">
+        <div class="sb-time">9:41</div>
+        <div class="sb-icons">
+          <svg viewBox="0 0 18 12" width="17" height="11">
+            <rect x="0" y="7.6" width="3" height="4.4" rx="1" fill="currentColor"/>
+            <rect x="4.6" y="5.3" width="3" height="6.7" rx="1" fill="currentColor"/>
+            <rect x="9.2" y="2.7" width="3" height="9.3" rx="1" fill="currentColor"/>
+            <rect x="13.8" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+          </svg>
+          <span class="sb-net">5G</span>
+          <svg viewBox="0 0 27 13" width="26" height="12.5">
+            <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+              stroke="currentColor" stroke-opacity=".4" stroke-width="1.1"/>
+            <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+            <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".45"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="pass-top">
+        <div class="pass-lock">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff"
+            stroke-width="1.7" stroke-linejoin="round">
+            <rect x="4.6" y="10.4" width="14.8" height="10.2" rx="2.6"/>
+            <path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8"/>
+          </svg>
+        </div>
+        <div class="pass-tip">向上轻扫使用面容ID或输入密码</div>
+        <div class="pass-dots" id="passDots">
+          <div class="pass-dot"></div>
+          <div class="pass-dot"></div>
+          <div class="pass-dot"></div>
+          <div class="pass-dot"></div>
+        </div>
+      </div>
+
+      <div class="keypad" id="keypad">
+        <button class="key" data-k="1"><span class="k-num">1</span></button>
+        <button class="key" data-k="2"><span class="k-num">2</span><span class="k-let">ABC</span></button>
+        <button class="key" data-k="3"><span class="k-num">3</span><span class="k-let">DEF</span></button>
+        <button class="key" data-k="4"><span class="k-num">4</span><span class="k-let">GHI</span></button>
+        <button class="key" data-k="5"><span class="k-num">5</span><span class="k-let">JKL</span></button>
+        <button class="key" data-k="6"><span class="k-num">6</span><span class="k-let">MNO</span></button>
+        <button class="key" data-k="7"><span class="k-num">7</span><span class="k-let">PQRS</span></button>
+        <button class="key" data-k="8"><span class="k-num">8</span><span class="k-let">TUV</span></button>
+        <button class="key" data-k="9"><span class="k-num">9</span><span class="k-let">WXYZ</span></button>
+        <button class="key key-ghost" data-k="del"><span class="k-num" style="font-size:15px;">删除</span></button>
+        <button class="key" data-k="0"><span class="k-num">0</span></button>
+        <button class="key key-ghost" data-k="face"><span class="k-num" style="font-size:15px;">面容</span></button>
+      </div>
+
+      <div class="pass-footer">
+        <span>紧急情况</span>
+        <span>取消</span>
+      </div>
+      <div class="home-indicator light"></div>
+    </div>
+  </div>
+
+  <!-- ================= 3. 桌面 ================= -->
+  <div class="page page-home" id="pageHome">
+    <div class="status-bar sb-dark">
+      <div class="sb-time">9:41</div>
+      <div class="sb-icons">
+        <svg viewBox="0 0 18 12" width="17" height="11">
+          <rect x="0" y="7.6" width="3" height="4.4" rx="1" fill="currentColor"/>
+          <rect x="4.6" y="5.3" width="3" height="6.7" rx="1" fill="currentColor"/>
+          <rect x="9.2" y="2.7" width="3" height="9.3" rx="1" fill="currentColor"/>
+          <rect x="13.8" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+        </svg>
+        <span class="sb-net">5G</span>
+        <svg viewBox="0 0 27 13" width="26" height="12.5">
+          <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+            stroke="currentColor" stroke-opacity=".35" stroke-width="1.1"/>
+          <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+          <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-scroll">
+      <!-- 天气小组件 -->
+      <div class="weather-widget">
+        <div class="ww-top">
+          <div>
+            <div class="ww-city">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+              </svg>
+              北京
+            </div>
+            <div class="ww-temp">21°</div>
+            <div class="ww-cond">晴间多云</div>
+          </div>
+          <div class="ww-sun">☀️</div>
+        </div>
+        <div class="ww-days">
+          <div class="ww-day"><span>周三</span><span class="wd-ic">☀️</span><span class="wd-t">22°</span></div>
+          <div class="ww-day"><span>周四</span><span class="wd-ic">⛅️</span><span class="wd-t">19°</span></div>
+          <div class="ww-day"><span>周五</span><span class="wd-ic">🌧️</span><span class="wd-t">20°</span></div>
+          <div class="ww-day"><span>周六</span><span class="wd-ic">⛅️</span><span class="wd-t">23°</span></div>
+          <div class="ww-day"><span>周日</span><span class="wd-ic">☀️</span><span class="wd-t">21°</span></div>
+        </div>
+        <div class="ww-note">Cooler tomorrow, with a high of 19°</div>
+      </div>
+
+      <!-- 日程小组件 -->
+      <div class="events-widget">
+        <div class="ew-head">
+          <span class="ew-title">Calendar</span>
+          <span class="ew-date" id="ewDate">4月28日 周一</span>
+        </div>
+        <div class="ew-item">
+          <div class="ew-bar" style="background:#ff453a"></div>
+          <div><div class="ew-name">录歌安排</div><div class="ew-sub">4月29日 · 全天</div></div>
+        </div>
+        <div class="ew-item">
+          <div class="ew-bar" style="background:#0a84ff"></div>
+          <div><div class="ew-name">飞机（北京 - 首尔）</div><div class="ew-sub">4月30日 · 09:20</div></div>
+        </div>
+        <div class="ew-item">
+          <div class="ew-bar" style="background:#ff9f0a"></div>
+          <div><div class="ew-name">抢购第五限定联动</div><div class="ew-sub">5月10日 · 10:00</div></div>
+        </div>
+      </div>
+
+      <!-- 图标 -->
+      <div class="icon-grid">
+        <!-- Notes -->
+        <button class="app-icon" onclick="openApp('notes')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#FFD75E,#FFC300)">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <rect x="5" y="3.6" width="20" height="22.8" rx="3.2" fill="#fff" opacity=".96"/>
+              <path d="M9 10.5h12M9 15h12M9 19.5h8" stroke="#F0BE00" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="icon-label">备忘录</span>
+        </button>
+        <!-- Settings -->
+        <button class="app-icon" onclick="openApp('settings')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#B9BCC2,#7C818A)">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6">
+              <circle cx="12" cy="12" r="3.4"/>
+              <circle cx="12" cy="12" r="8.2" stroke-dasharray="2.1 2.7"/>
+            </svg>
+          </span>
+          <span class="icon-label">设置</span>
+        </button>
+        <!-- Calculator -->
+        <button class="app-icon" onclick="openApp('calc')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#3A3A3C,#1C1C1E)">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <rect x="6" y="4" width="18" height="22" rx="3" fill="#2C2C2E"/>
+              <rect x="9" y="7" width="12" height="5" rx="1.4" fill="#8E8E93"/>
+              <circle cx="10.5" cy="16" r="1.5" fill="#FF9F0A"/>
+              <circle cx="15" cy="16" r="1.5" fill="#FF9F0A"/>
+              <circle cx="19.5" cy="16" r="1.5" fill="#8E8E93"/>
+              <circle cx="10.5" cy="21" r="1.5" fill="#8E8E93"/>
+              <circle cx="15" cy="21" r="1.5" fill="#8E8E93"/>
+              <circle cx="19.5" cy="21" r="1.5" fill="#FF9F0A"/>
+            </svg>
+          </span>
+          <span class="icon-label">计算器</span>
+        </button>
+        <!-- Photos -->
+        <button class="app-icon" onclick="openApp('photos')">
+          <span class="icon-tile" style="background:#fff">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <g transform="translate(15,15)">
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#FFCC00"/>
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#FF9500" transform="rotate(45)"/>
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#FF3B30" transform="rotate(90)"/>
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#FF2D55" transform="rotate(135)"/>
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#AF52DE" transform="rotate(180)"/>
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#007AFF" transform="rotate(225)"/>
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#34C759" transform="rotate(270)"/>
+                <ellipse cx="0" cy="-6" rx="3.1" ry="6" fill="#5AC8FA" transform="rotate(315)"/>
+              </g>
+            </svg>
+          </span>
+          <span class="icon-label">照片</span>
+        </button>
+
+        <!-- App Store -->
+        <button class="app-icon" onclick="openApp('appstore')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#1CB5FF,#0A7AFF)">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#fff"
+              stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21.2l6-11.4 6 11.4"/>
+              <path d="M11.6 16.6h6.8"/>
+            </svg>
+          </span>
+          <span class="icon-label">App Store</span>
+        </button>
+        <!-- Safari -->
+        <button class="app-icon" onclick="openApp('safari')">
+          <span class="icon-tile" style="background:#fff">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <circle cx="15" cy="15" r="12" fill="#1C9CF0"/>
+              <circle cx="15" cy="15" r="10.4" fill="#F2F7FF"/>
+              <path d="M15 15L20.4 9.6 17.6 16.4z" fill="#FF3B30"/>
+              <path d="M15 15L9.6 20.4 12.4 13.6z" fill="#D1D5DB"/>
+            </svg>
+          </span>
+          <span class="icon-label">Safari</span>
+        </button>
+        <!-- Clock -->
+        <button class="app-icon" onclick="openApp('clock')">
+          <span class="icon-tile" style="background:#fff">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <circle cx="15" cy="15" r="12" fill="#1C1C1E"/>
+              <path d="M15 7.6V15l5 3" stroke="#fff" stroke-width="1.9"
+                stroke-linecap="round" fill="none"/>
+              <circle cx="15" cy="15" r="1.2" fill="#FF9F0A"/>
+            </svg>
+          </span>
+          <span class="icon-label">时钟</span>
+        </button>
+        <!-- Weather -->
+        <button class="app-icon" onclick="openApp('weather')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#4FA8FF,#1D6FE8)">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <circle cx="11" cy="11" r="4.6" fill="#FFD60A"/>
+              <g fill="#fff" opacity=".95">
+                <circle cx="12" cy="19" r="3.4"/>
+                <circle cx="17" cy="17.4" r="4.6"/>
+                <circle cx="21" cy="19.4" r="3"/>
+                <rect x="12" y="19" width="9" height="3.4" rx="1.7"/>
+              </g>
+            </svg>
+          </span>
+          <span class="icon-label">天气</span>
+        </button>
+      </div>
+
+      <!-- 月历小组件 -->
+      <div class="cal-widget" id="calWidget"></div>
+
+      <!-- 搜索 -->
+      <div class="search-bar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="10.5" cy="10.5" r="6.6"/>
+          <path d="M15.4 15.4l4.4 4.4" stroke-linecap="round"/>
+        </svg>
+        <span>Search</span>
+      </div>
+    </div>
+
+    <!-- Dock -->
+    <div class="dock-wrap">
+      <div class="dock">
+        <button class="app-icon" onclick="openApp('msg')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#5BF675,#0FCF3C)">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <path d="M15 7c-5 0-9 3.2-9 7.2 0 2.3 1.3 4.3 3.3 5.6-.2 1.5-.9 2.9-1.8 3.8 1.9-.2 3.6-1 4.9-2 1 .3 2 .4 3 .4 5 0 9-3.2 9-7.2S20 7 15 7z" fill="#fff"/>
+            </svg>
+          </span>
+        </button>
+        <button class="app-icon" onclick="openApp('wechat')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#5BE87B,#07C160)">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <ellipse cx="12.4" cy="13" rx="7.8" ry="6.2" fill="#fff"/>
+              <ellipse cx="19.4" cy="19" rx="6.2" ry="5" fill="#fff"/>
+            </svg>
+          </span>
+        </button>
+        <button class="app-icon" onclick="openApp('douban')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#4CBB6E,#2E9E4F)">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="#fff">
+              <rect x="6.5" y="8" width="17" height="2.9" rx="1.45"/>
+              <rect x="9.6" y="13.6" width="10.8" height="2.9" rx="1.45"/>
+              <rect x="6.5" y="19.2" width="17" height="2.9" rx="1.45"/>
+            </svg>
+          </span>
+        </button>
+        <button class="app-icon" onclick="openApp('meituan')">
+          <span class="icon-tile" style="background:linear-gradient(180deg,#FFE066,#FFC300)">
+            <svg width="30" height="30" viewBox="0 0 30 30">
+              <text x="15" y="21.5" text-anchor="middle" font-size="16" font-weight="700"
+                fill="#1C1C1E" font-family="-apple-system,sans-serif">美</text>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div class="home-indicator dark"></div>
+    </div>
+  </div>
+
+  <!-- ================= 4. 备忘录 ================= -->
+  <div class="page page-notes" id="pageNotes">
+    <div class="status-bar sb-dark">
+      <div class="sb-time">9:41</div>
+      <div class="sb-icons">
+        <svg viewBox="0 0 16 12" width="16" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7.2a6.2 6.2 0 0 1 8.8 0"/>
+          <circle cx="8" cy="10" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+        <svg viewBox="0 0 27 13" width="25" height="12">
+          <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+            stroke="currentColor" stroke-opacity=".35" stroke-width="1.1"/>
+          <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+          <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="notes-nav">
+      <div class="nav-side">
+        <button class="nav-btn" onclick="goHome()" aria-label="返回">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 5L7.5 12l7 7"/>
+          </svg>
+        </button>
+      </div>
+      <div class="nav-side">
+        <button class="nav-btn" aria-label="分享">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 15.5V3.6"/><path d="M8 7.2l4-3.6 4 3.6"/>
+            <path d="M5.5 12.4v6.6a1.6 1.6 0 0 0 1.6 1.6h9.8a1.6 1.6 0 0 0 1.6-1.6v-6.6"/>
+          </svg>
+        </button>
+        <button class="nav-btn" aria-label="更多">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="5.4" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.6" r="1.7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="notes-scroll">
+      <div class="notes-time">2025年4月24日 20:30</div>
+      <div class="notes-title">恋人未满</div>
+      <div class="notes-body">【王橹杰】为什么只和你能聊一整夜
+【穆祉丞】为什么才道别就又想见面
+【王橹杰】在朋友里面 就属你最特别
+【穆祉丞】总让我觉得很亲很贴
+
+【穆祉丞】为什么你在意谁陪我逛街
+【王橹杰】为什么你担心谁对我放电
+【穆祉丞】你说你对我 比别人多一些
+【王橹杰】却又不说是多哪一些
+
+【合】友达以上 恋人未满
+【合】甜蜜心烦 愉悦混乱
+【合】我们以后 会变怎样
+【合】我迫不及待想知道答案
+
+【王橹杰】再靠近一点点 就让你牵手
+【穆祉丞】再勇敢一点点 我就跟你走
+【王橹杰】你还等什么 时间已经不多
+【穆祉丞】再下去 只好只做朋友
+
+【穆祉丞】再向前一点点 我就会点头
+【王橹杰】再冲动一点点 我就不闪躲
+【穆祉丞】不过三个字 别犹豫这么久
+【王橹杰】只要你说出口 你就能拥有我
+
+【王橹杰】为什么你寂寞只想要我陪
+【穆祉丞】为什么我难过只肯让你安慰
+【王橹杰】我们心里面 明明都有感觉
+【穆祉丞】为什么不敢面对
+
+【穆祉丞】为什么你寂寞只想要我陪
+【王橹杰】为什么我难过只肯让你安慰
+【穆祉丞】我们心里面 明明都有感觉
+【王橹杰】为什么不敢面对
+
+【合】友达以上 恋人未满
+【合】甜蜜心烦 愉悦混乱
+【合】我们以后 会变怎样
+【合】我迫不及待想知道答案
+
+【穆祉丞】再靠近一点点 就让你牵手
+【王橹杰】再勇敢一点点 我就跟你走
+【穆祉丞】你还等什么 时间已经不多
+【王橹杰】再下去 只好只做朋友
+
+【王橹杰】再向前一点点 我就会点头
+【穆祉丞】再冲动一点点 我就不闪躲
+【王橹杰】不过三个字 别犹豫这么久
+【穆祉丞】只要你说出口 你就能拥有我
+
+【王橹杰】我不相信 都动了感情却到不了
+【穆祉丞】爱情 那么贴心却进不了 心底
+【合】你能不能快一点决定
+【合】对我说我爱你
+
+【穆祉丞】再靠近一点点 就让你牵手
+【王橹杰】再勇敢一点点 我就跟你走
+【穆祉丞】你还等什么 时间已经不多
+【王橹杰】再下去 只好只做朋友
+
+【王橹杰】再向前一点点 我就会点头
+【穆祉丞】再冲动一点点 我就不闪躲
+【王橹杰】不过三个字 别犹豫这么久
+【穆祉丞】只要你说出口 你就能拥有我
+【合】只要你说出口 你就能拥有我</div>
+    </div>
+
+    <div class="notes-toolbar">
+      <div class="nt-left">
+        <button class="nt-btn" aria-label="多选">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.7" stroke-linecap="round">
+            <circle cx="12" cy="12" r="8.4"/><path d="M8.4 12.2l2.6 2.6 4.6-5"/>
+          </svg>
+        </button>
+        <button class="nt-btn" aria-label="附件">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18.6 11.4l-7.1 7.1a4.3 4.3 0 0 1-6.1-6.1l7.4-7.4a2.9 2.9 0 0 1 4.1 4.1l-7.3 7.3a1.5 1.5 0 0 1-2.1-2.1l6.6-6.6"/>
+          </svg>
+        </button>
+        <button class="nt-btn" aria-label="定位">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.7" stroke-linejoin="round">
+            <path d="M12 21.2s6.6-6.3 6.6-11a6.6 6.6 0 0 0-13.2 0c0 4.7 6.6 11 6.6 11z"/>
+            <circle cx="12" cy="10" r="2.5"/>
+          </svg>
+        </button>
+      </div>
+      <div class="nt-edit">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="home-indicator dark"></div>
+  </div>
+
+  <!-- ================= 5. 照片 ================= -->
+  <div class="page page-photos" id="pagePhotos">
+    <div class="status-bar sb-dark">
+      <div class="sb-time">9:41</div>
+      <div class="sb-icons">
+        <svg viewBox="0 0 18 12" width="16" height="11" fill="none" stroke="currentColor"
+          stroke-width="1.4" stroke-linecap="round">
+          <path d="M3.6 4.4v4.4M6.6 3v7.4"/>
+        </svg>
+        <span class="sb-net" style="font-size:11.5px;">4G</span>
+        <svg viewBox="0 0 27 13" width="25" height="12">
+          <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+            stroke="currentColor" stroke-opacity=".35" stroke-width="1.1"/>
+          <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+          <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ph-nav">
+      <div class="ph-title">图库</div>
+      <div class="ph-date">2025年4月28日</div>
+      <div class="ph-actions">
+        <button class="ph-search" aria-label="搜索">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4l4.4 4.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="ph-select">选择</button>
+        <div class="ph-avatar"><span class="ph-badge">!</span></div>
+      </div>
+    </div>
+
+    <div class="photo-grid" id="photoGrid"></div>
+
+    <div class="ph-filter">
+      <button class="pf-sort" aria-label="排序">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 4.5v15M8 4.5L4.6 8M8 4.5L11.4 8"/>
+          <path d="M16 19.5v-15M16 19.5L12.6 16M16 19.5L19.4 16"/>
+        </svg>
+      </button>
+      <div class="pf-tabs">
+        <button class="pf-tab">年</button>
+        <button class="pf-tab">月</button>
+        <button class="pf-tab on">全部</button>
+      </div>
+      <button class="pf-close" onclick="goHome()" aria-label="关闭">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.4" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="home-indicator dark"></div>
+
+    <div class="photo-viewer" id="photoViewer">
+      <img id="photoViewerImg" src="" alt="">
+    </div>
+  </div>
+
+  <!-- ================= 6. 微信列表 ================= -->
+  <div class="page page-wechat" id="pageWechat">
+    <div class="status-bar sb-dark">
+      <div class="sb-time">9:41</div>
+      <div class="sb-icons">
+        <svg viewBox="0 0 18 12" width="16" height="11">
+          <rect x="0" y="7.6" width="3" height="4.4" rx="1" fill="currentColor"/>
+          <rect x="4.6" y="5.3" width="3" height="6.7" rx="1" fill="currentColor"/>
+          <rect x="9.2" y="2.7" width="3" height="9.3" rx="1" fill="currentColor"/>
+          <rect x="13.8" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+        </svg>
+        <span class="sb-net">5G</span>
+        <svg viewBox="0 0 27 13" width="25" height="12">
+          <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+            stroke="currentColor" stroke-opacity=".35" stroke-width="1.1"/>
+          <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+          <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="wx-nav">
+      <button class="wx-star" aria-label="收藏">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linejoin="round">
+          <path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.95 5.6L12 16.5l-5.05 2.7.95-5.6-4-3.9 5.6-.8z"/>
+        </svg>
+      </button>
+      <div class="wx-title">微信</div>
+      <button class="wx-plus" aria-label="添加">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round">
+          <path d="M12 4.5v15M4.5 12h15"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="wx-list" id="wxList"></div>
+
+    <div class="wx-tabbar">
+      <div class="wx-tab on">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3.6c-4.9 0-8.9 3.2-8.9 7.1 0 2.3 1.3 4.3 3.4 5.6-.2 1.5-.9 2.8-1.8 3.7 1.9-.2 3.5-1 4.8-2 1 .2 1.7.3 2.5.3 4.9 0 8.9-3.2 8.9-7.1S16.9 3.6 12 3.6z"/>
+        </svg>
+        <span>微信</span>
+      </div>
+      <div class="wx-tab">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="12" cy="8.4" r="3.6"/>
+          <path d="M4.8 20c0-3.7 3.2-6 7.2-6s7.2 2.3 7.2 6" stroke-linecap="round"/>
+        </svg>
+        <span>通讯录</span>
+      </div>
+      <div class="wx-tab">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="12" cy="12" r="8.4"/>
+          <path d="M15.6 8.4l-2.2 5-5 2.2 2.2-5z" stroke-linejoin="round"/>
+        </svg>
+        <span>发现</span>
+      </div>
+      <div class="wx-tab">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="12" cy="8" r="3.6"/>
+          <path d="M5 20c0-3.5 3.1-5.8 7-5.8s7 2.3 7 5.8" stroke-linecap="round"/>
+        </svg>
+        <span>我</span>
+      </div>
+    </div>
+    <div class="home-indicator dark"></div>
+  </div>
+
+  <!-- ================= 7. 聊天 ================= -->
+  <div class="page page-chat" id="pageChat">
+    <div class="status-bar sb-light">
+      <div class="sb-time">9:41</div>
+      <div class="sb-icons">
+        <svg viewBox="0 0 18 12" width="16" height="11">
+          <rect x="0" y="7.6" width="3" height="4.4" rx="1" fill="currentColor"/>
+          <rect x="4.6" y="5.3" width="3" height="6.7" rx="1" fill="currentColor"/>
+          <rect x="9.2" y="2.7" width="3" height="9.3" rx="1" fill="currentColor"/>
+          <rect x="13.8" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+        </svg>
+        <svg viewBox="0 0 16 12" width="15" height="11" fill="none" stroke="currentColor"
+          stroke-width="1.5" stroke-linecap="round">
+          <path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7.2a6.2 6.2 0 0 1 8.8 0"/>
+          <circle cx="8" cy="10" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+        <svg viewBox="0 0 27 13" width="25" height="12">
+          <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+            stroke="currentColor" stroke-opacity=".4" stroke-width="1.1"/>
+          <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+          <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".45"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="chat-nav">
+      <button onclick="backToWechat()" aria-label="返回">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 5L7.5 12l7 7"/>
+        </svg>
+      </button>
+      <div class="chat-title" id="chatTitle">哥哥</div>
+      <button aria-label="更多">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-body" id="chatBody"></div>
+
+    <div class="chat-input-bar">
+      <button class="ci-btn" aria-label="语音">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linecap="round">
+          <rect x="9" y="3" width="6" height="11" rx="3"/>
+          <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/>
+        </svg>
+      </button>
+      <div class="ci-field"></div>
+      <button class="ci-btn" aria-label="表情">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linecap="round">
+          <circle cx="12" cy="12" r="8.6"/>
+          <circle cx="9" cy="10" r=".9" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="10" r=".9" fill="currentColor" stroke="none"/>
+          <path d="M8.4 14.2a4.4 4.4 0 0 0 7.2 0"/>
+        </svg>
+      </button>
+      <button class="ci-btn" aria-label="更多">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.9" stroke-linecap="round">
+          <circle cx="12" cy="12" r="8.6"/>
+          <path d="M12 8.2v7.6M8.2 12h7.6"/>
+        </svg>
+      </button>
+    </div>
+    <div class="home-indicator light"></div>
+  </div>
+
+  <!-- ================= 8. 豆瓣 ================= -->
+  <div class="page page-douban" id="pageDouban">
+    <div class="status-bar sb-light">
+      <div class="sb-time">9:41</div>
+      <div class="sb-icons">
+        <svg viewBox="0 0 18 12" width="16" height="11">
+          <rect x="0" y="7.6" width="3" height="4.4" rx="1" fill="currentColor"/>
+          <rect x="4.6" y="5.3" width="3" height="6.7" rx="1" fill="currentColor"/>
+          <rect x="9.2" y="2.7" width="3" height="9.3" rx="1" fill="currentColor"/>
+          <rect x="13.8" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+        </svg>
+        <span class="sb-net">5G</span>
+        <svg viewBox="0 0 27 13" width="25" height="12">
+          <rect x=".6" y=".6" width="22" height="11.8" rx="3.4" fill="none"
+            stroke="currentColor" stroke-opacity=".4" stroke-width="1.1"/>
+          <rect x="2.2" y="2.2" width="6" height="8.6" rx="2" fill="currentColor"/>
+          <path d="M24.3 4.4v4.2c1-.3 1.5-1 1.5-2.1s-.5-1.8-1.5-2.1z" fill="currentColor" fill-opacity=".45"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="db-nav">
+      <button class="db-back" onclick="goHome()" aria-label="返回">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 5L7.5 12l7 7"/>
+        </svg>
+      </button>
+      <div class="db-group">
+        <div class="db-group-name">生活组</div>
+        <div class="db-group-num">271199人加入</div>
+      </div>
+      <button class="db-more" aria-label="更多">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="db-scroll">
+      <div class="db-post-head">
+        <div class="db-ava"></div>
+        <div>
+          <div class="db-user">得意黑</div>
+          <div class="db-meta">2025-2-26 21:11 · 北京</div>
+        </div>
+      </div>
+
+      <div class="db-title">求助，我该怎么让男朋友看起来像已经谈恋爱的</div>
+      <div class="db-content">如题，lz和对象前阵子确定下关系开始恋爱啦，但是我就觉得很不安，我觉得他对我的好可能是出于一种责任感......身边人也不知道我们现在的关系ᴛωᴛ我们相处好像和以前也没什么变化......昨天他给我买了我一直很想要的泡泡玛特限定，嗯，然后我在想给他送某球衣礼物会不会有点太过了TT</div>
+
+      <div class="db-actions">
+        <span>回复</span><span>赞</span><span>转发</span><span>收藏</span><span>礼物</span>
+      </div>
+
+      <div class="db-comments-head">
+        <span>全部回复</span>
+        <span class="db-lz">楼主</span>
+      </div>
+
+      <div id="commentList"></div>
+    </div>
+
+    <div class="db-inputbar">
+      <div class="db-input">写回复</div>
+      <button class="db-ibtn" aria-label="点赞">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linejoin="round">
+          <path d="M7 10.5v9.5H4.4V10.5z"/>
+          <path d="M7 10.5l4-6.4c1.5 0 2.4 1 2.4 2.4v2.6h4.4a2 2 0 0 1 2 2.4l-1 5.4a2 2 0 0 1-2 1.6H7"/>
+        </svg>
+      </button>
+      <button class="db-ibtn" aria-label="回复">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linejoin="round">
+          <path d="M20.4 11.6c0 4-3.8 7.2-8.4 7.2-1 0-2-.2-2.9-.5l-4.5 1.5 1.4-3.9a6.9 6.9 0 0 1-2.4-5.2c0-4 3.8-7.2 8.4-7.2s8.4 3.2 8.4 7.2z"/>
+        </svg>
+      </button>
+      <button class="db-ibtn" aria-label="收藏">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linejoin="round">
+          <path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.95 5.6L12 16.5l-5.05 2.7.95-5.6-4-3.9 5.6-.8z"/>
+        </svg>
+      </button>
+      <button class="db-ibtn" aria-label="图片">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linejoin="round">
+          <rect x="3.4" y="5" width="17.2" height="14" rx="2.4"/>
+          <circle cx="8.6" cy="10" r="1.6"/>
+          <path d="M4.4 17.2l4.8-4.4 3.4 3 3-2.6 4 3.6"/>
+        </svg>
+      </button>
+    </div>
+    <div class="home-indicator dark"></div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<script>
+/* ==================== 时间 ==================== */
+function pad(n){return n<10?'0'+n:''+n;}
+var WEEK=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+var WEEK_SHORT=['周日','周一','周二','周三','周四','周五','周六'];
+
+/* 固定日期：2025年4月28日 星期一 */
+var FIXED_DATE_TEXT='4月28日 星期一';
+var FIXED_DATE_SHORT='4月28日 周一';
+
+function updateClock(){
+  var d=new Date();
+  var hh=pad(d.getHours()), mm=pad(d.getMinutes());
+  document.querySelectorAll('.sb-time').forEach(function(e){e.textContent=hh+':'+mm;});
+  var ch=document.getElementById('clockH'), cm=document.getElementById('clockM');
+  if(ch) ch.textContent=hh;
+  if(cm) cm.textContent=mm;
+  /* 日期固定为 2025年4月28日 */
+  var ld=document.getElementById('lockDate');
+  if(ld) ld.textContent=FIXED_DATE_TEXT;
+  var ed=document.getElementById('ewDate');
+  if(ed) ed.textContent=FIXED_DATE_SHORT;
+}
+updateClock();
+setInterval(updateClock,10000);
+
+/* ==================== 页面切换 ==================== */
+var currentPage='pageLock';
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){
+    p.classList.toggle('active',p.id===id);
+  });
+  currentPage=id;
+}
+function goHome(){ showPage('pageHome'); }
+
+/* ==================== 锁屏 / 密码 ==================== */
+var swipeStart=null;
+function swipeUp(el,cb){
+  el.addEventListener('touchstart',function(e){swipeStart=e.touches[0].clientY;},{passive:true});
+  el.addEventListener('touchend',function(e){
+    if(swipeStart!==null && swipeStart-e.changedTouches[0].clientY>55){cb();}
+    swipeStart=null;
+  });
+  el.addEventListener('mousedown',function(e){swipeStart=e.clientY;});
+  el.addEventListener('mouseup',function(e){
+    if(swipeStart!==null && swipeStart-e.clientY>55){cb();}
+    swipeStart=null;
+  });
+}
+swipeUp(document.getElementById('pageLock'),function(){ showPage('pagePass'); });
+
+/* 密码键盘 */
+var PASS_CODE='1116';
+var input='';
+var dots=document.querySelectorAll('#passDots .pass-dot');
+function refreshDots(){
+  dots.forEach(function(d,i){ d.classList.toggle('filled',i<input.length); });
+}
+document.getElementById('keypad').addEventListener('click',function(e){
+  var btn=e.target.closest('.key');
+  if(!btn) return;
+  var k=btn.dataset.k;
+  if(k==='del'){ input=input.slice(0,-1); refreshDots(); return; }
+  if(k==='face'){ return; }
+  if(input.length>=4) return;
+  input+=k;
+  refreshDots();
+  if(input.length===4){
+    setTimeout(function(){
+      if(input===PASS_CODE){
+        input=''; refreshDots();
+        showPage('pageHome');
+      }else{
+        var pd=document.getElementById('passDots');
+        pd.classList.add('shake');
+        setTimeout(function(){
+          pd.classList.remove('shake');
+          input=''; refreshDots();
+        },420);
+      }
+    },160);
+  }
+});
+
+/* ==================== 桌面月历（固定 2025年4月，28日高亮） ==================== */
+(function buildCalendar(){
+  var y=2025, m=3, today=28;           /* 2025年4月 */
+  var firstDay=new Date(y,m,1).getDay(); /* 4月1日 星期二 = 2 */
+  var days=new Date(y,m+1,0).getDate();  /* 30 天 */
+  var prevDays=new Date(y,m,0).getDate();
+
+  var html='<div class="cw-head"><span class="cw-month">4月</span>'+
+           '<span class="cw-year">2025</span></div>';
+  html+='<div class="cw-week"><span>日</span><span>一</span><span>二</span><span>三</span>'+
+        '<span>四</span><span>五</span><span>六</span></div>';
+  html+='<div class="cw-grid">';
+  for(var i=firstDay-1;i>=0;i--){
+    html+='<span class="mute">'+(prevDays-i)+'</span>';
+  }
+  for(var d=1;d<=days;d++){
+    html+='<span class="'+(d===today?'today':'')+'">'+d+'</span>';
+  }
+  var cells=firstDay+days;
+  var rest=(7-cells%7)%7;
+  for(var k=1;k<=rest;k++){ html+='<span class="mute">'+k+'</span>'; }
+  html+='</div>';
+  document.getElementById('calWidget').innerHTML=html;
+})();
+
+/* ==================== 应用启动 ==================== */
+function openApp(name){
+  if(name==='notes') showPage('pageNotes');
+  else if(name==='photos') showPage('pagePhotos');
+  else if(name==='wechat') showPage('pageWechat');
+  else if(name==='douban') showPage('pageDouban');
+}
+
+/* ==================== 照片 ==================== */
+(function buildPhotos(){
+  var grid=document.getElementById('photoGrid');
+  var html='';
+  for(var i=1;i<=14;i++){
+    html+='<div class="photo-cell"><img src="照片'+i+'.jpg" alt="" '+
+          'onerror="imgFallback(this,'+i+')" data-src="照片'+i+'.jpg"></div>';
+  }
+  grid.innerHTML=html;
+  grid.addEventListener('click',function(e){
+    var cell=e.target.closest('.photo-cell');
+    if(!cell) return;
+    var img=cell.querySelector('img');
+    document.getElementById('photoViewerImg').src=img.src;
+    document.getElementById('photoViewer').classList.add('show');
+  });
+  document.getElementById('photoViewer').addEventListener('click',function(){
+    this.classList.remove('show');
+  });
+})();
+
+/* 照片页上滑返回桌面 */
+swipeUp(document.getElementById('pagePhotos'),goHome);
+
+/* ==================== 微信会话列表 ==================== */
+var CHATS={
+  ge:{
+    name:'哥哥',
+    avatar:'穆祉丞头像.jpg',
+    myAvatar:'王橹杰头像.jpg',
+    preview:'以后请尊称我为穆祉丞的男朋友 (ᐥᐜᐥ)♡︎ᐝ',
+    time:'21:11',
+    badge:2,
+    top:true,
+    days:[
+      {date:'2024年7月16日',msgs:[
+        {s:'l',t:'hi！橹橹你好呀，我叫穆祉丞，也可以喊我穆瑞恩😸'},
+        {s:'l',t:'以后我们就是小伙伴啦'},
+        {s:'r',t:'哥哥你好，我是王橹杰'},
+        {s:'l',t:'哎呀，我还是第一次在公司里当哥哥呢😼以后我罩着你'},
+        {s:'r',t:'好的，谢谢哥哥૮₍ˊᗜˋ₎ა'}
+      ]},
+      {date:'2024年10月6日',msgs:[
+        {s:'l',t:'在吗在吗'},
+        {s:'l',t:'你想不想当我的室友😽我们去找staff抢那个双人间吧，才不要给其他人睡'},
+        {s:'l',t:'我偷偷去打听过，那个房间大小够你练琴和我跳舞😸'},
+        {s:'r',t:'！'},
+        {s:'r',t:'好呀哥哥！'},
+        {s:'r',t:'这个王橹杰好开心的吧'}
+      ]},
+      {date:'2024年12月2日',msgs:[
+        {s:'r',t:'哥哥，早餐吃什么？'},
+        {s:'l',t:'你帮我拿两个小笼包回宿舍吧😽我再睡会儿'},
+        {s:'r',t:'好'}
+      ]},
+      {date:'2025年1月14日',msgs:[
+        {s:'l',t:'今晚和他们在网吧打，不回来了，你先睡吧'},
+        {s:'r',t:'哥哥 ´ᯅ`你忍心让小橹橹一个人抱着大面团等你回家吗'},
+        {s:'l',t:'哎呀哎呀'},
+        {s:'l',t:'你收藏的那张唱片给你买了'},
+        {s:'l',t:'乖啊'},
+        {s:'r',t:'谢谢哥哥દ(˶‾᷄ ⁻̫ ‾᷅˵) ૭'}
+      ]},
+      {date:'2025年2月15日',msgs:[
+        {s:'l',t:'我昨晚醒着的，刚好童哥请我们喝了霸王茶姬'},
+        {s:'l',t:'你亲我脸是什么意思？'},
+        {s:'l',t:'？'},
+        {s:'l',t:'王橹杰'},
+        {s:'l',t:'回我信息'},
+        {s:'l',t:'。'},
+        {s:'l',t:'我到你家楼下了。开门。'}
+      ]},
+      {date:'2025年2月27日',msgs:[
+        {s:'l',t:'我靠 我真要被你笑死😺'},
+        {s:'l',t:'你朋友圈艾特我发的那个文案什么鬼啊？如何成为将军夫人，在他还是一个小兵的时候嫁给他。'},
+        {s:'r',t:'哥哥......'},
+        {s:'r',t:'这个王橹杰认真挑了很久的文案！´ᯅ`'},
+        {s:'l',t:'叫什么哥哥，叫将军吧'},
+        {s:'l',t:'夫人晚安，将军困了'}
+      ]},
+      {date:'2025年4月28日',msgs:[
+        {s:'r',t:'哥哥，我整理好我们五一旅行的全程计划啦(´,,•ω•,,`)'},
+        {s:'l',t:'OKOK'},
+        {s:'l',t:'橹橹真棒😺'},
+        {s:'r',t:'然后呢就是我收藏的情侣合照打卡这次可以一起完成了吗穆祉丞，如果手机里再留下一些神秘虚影照片这个王橹杰呢好像是会有点生气有点伤心有点想啃某只小猪嘴'},
+        {s:'l',t:'我错了兄弟 这次包狠狠出片的好吧'},
+        {s:'l',t:'不过啃嘴都可以都可以'},
+        {s:'r',t:'👍'}
+      ]}
+    ]
+  },
+  friend:{
+    name:'朋友',
+    avatar:'',
+    myAvatar:'王橹杰头像.jpg',
+    preview:'颜文字给你哥哥发去，我看着害怕',
+    time:'20:47',
+    badge:1,
+    days:[
+      {date:'2025年1月14日',msgs:[
+        {s:'l',t:'晚上老陈请吃火锅，你去不去'},
+        {s:'r',t:'不<(ToT)>'},
+        {s:'l',t:'？和穆老师吵架了？'},
+        {s:'r',t:'他又去和好朋友们打游戏了'},
+        {s:'r',t:'我不开心他不陪我'},
+        {s:'l',t:'哦呵呵，男孩子还是输给了邪恶的csgo'},
+        {s:'r',t:'我收回前言，穆祉丞还是心里有我的，我最好的哥哥呀૮ ´͈ ᗜ `͈ ა'},
+        {s:'l',t:'颜文字给你哥哥发去，我看着害怕'}
+      ]},
+      {date:'2025年2月15日',msgs:[
+        {s:'l',t:'大发 you干了什么？'},
+        {s:'l',t:'一开手机穆祉丞问我知不知道你去哪了，给我吓一跳'},
+        {s:'l',t:'咋还没回消息，你俩不会打架奋战进医院了吧'},
+        {s:'r',t:'滚'},
+        {s:'r',t:'哥哥怎么会舍得打我，我是哥哥最贴心的橹橹宝宝谢谢◝(⑅•ᴗ•⑅)◜'},
+        {s:'l',t:'看来是亲上嘴了'},
+        {s:'r',t:'不想给你说'},
+        {s:'r',t:'以后请尊称我为穆祉丞的男朋友 (ᐥᐜᐥ)♡︎ᐝ'}
+      ]}
+    ]
+  },
+  staff:{
+    name:'staff老师',
+    avatar:'',
+    myAvatar:'王橹杰头像.jpg',
+    preview:'好的',
+    time:'昨天',
+    days:[
+      {date:'2025年7月15日',msgs:[
+        {s:'l',t:'橹杰，晚点公司里的同学们会来加你的微信，可以和他们多聊聊天，熟悉一下情况'},
+        {s:'l',t:'毕竟你是新来最小的，有问题可以问小穆，他很热心'},
+        {s:'r',t:'好的，谢谢老师'}
+      ]},
+      {date:'2025年10月6日',msgs:[
+        {s:'r',t:'老师，我前几天问的那个双人间，我这边找好室友了～'},
+        {s:'l',t:'好巧，小穆也问了'},
+        {s:'r',t:'我就是和穆祉丞一起住'},
+        {s:'l',t:'👌🏼我给那边说一声，帮你们预订'},
+        {s:'l',t:'你们现在的关系真好'}
+      ]},
+      {date:'2025年2月14日',msgs:[
+        {s:'l',t:'橹杰，我这边了解到你的壁纸是小穆……'},
+        {s:'l',t:'我联系你家里了，你暂时回家休息几天吧'},
+        {s:'l',t:'这个年龄段，把敬仰错当成喜欢很正常'},
+        {s:'r',t:'好的'}
+      ]}
+    ]
+  },
+  crazy:{
+    name:'疯子',
+    avatar:'',
+    myAvatar:'王橹杰头像.jpg',
+    preview:'哈喽哈喽，能帮我代购吗',
+    time:'16:32',
+    badge:3,
+    days:[
+      {date:'2025年3月2日',msgs:[
+        {s:'l',t:'哇bro，教教我怎么谈恋爱不被staff锤呗'},
+        {s:'l',t:'人呢兄弟'}
+      ]},
+      {date:'2025年4月29日',msgs:[
+        {s:'l',t:'哈喽哈喽，能帮我代购吗'}
+      ]}
+    ]
+  }
+};
+
+var ORDER=['ge','friend','staff','crazy'];
+
+(function buildWechatList(){
+  var list=document.getElementById('wxList');
+  var html='';
+  ORDER.forEach(function(key){
+    var c=CHATS[key];
+    var isImg=!!c.avatar;
+    html+='<div class="wx-item" data-key="'+key+'">';
+    if(isImg){
+      html+='<img class="wx-ava" src="'+c.avatar+'" alt="" onerror="avatarFallback(this)">';
+    }else{
+      html+='<div class="wx-ava" style="display:flex;align-items:center;justify-content:center;'+
+            'font-size:19px;background:linear-gradient(140deg,#dbe6f7,#b9cbe8)">'+
+            (key==='friend'?'🙂':key==='staff'?'🧑‍💼':'🎭')+'</div>';
+    }
+    html+='<div class="wx-main">';
+    html+='<div class="wx-row1"><div class="wx-name">'+c.name+
+          (c.top?'<svg width="12" height="12" viewBox="0 0 24 24" fill="#c8c8c8"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>':'')+
+          '</div><div class="wx-time">'+c.time+'</div></div>';
+    html+='<div class="wx-row2"><div class="wx-preview">'+c.preview+'</div>'+
+          (c.badge?'<div class="wx-badge">'+c.badge+'</div>':'')+'</div>';
+    html+='</div></div>';
+  });
+  list.innerHTML=html;
+
+  list.addEventListener('click',function(e){
+    var item=e.target.closest('.wx-item');
+    if(!item) return;
+    openChat(item.dataset.key);
+  });
+})();
+
+function openChat(key){
+  var c=CHATS[key];
+  var body=document.getElementById('chatBody');
+  var html='';
+  c.days.forEach(function(day){
+    html+='<div class="chat-date"><span>'+day.date+'</span></div>';
+    day.msgs.forEach(function(m){
+      if(m.s==='l'){
+        /* 对方消息：头像在左，气泡在右 */
+        var av=c.avatar
+          ? '<img class="msg-avatar" src="'+c.avatar+'" alt="" onerror="avatarFallback(this)">'
+          : '<div class="msg-avatar" style="display:flex;align-items:center;justify-content:center;'+
+            'font-size:17px;background:linear-gradient(140deg,#3b4560,#2a3145)">🙂</div>';
+        html+='<div class="msg-row left">'+av+'<div class="bubble left">'+m.t+'</div></div>';
+      }else{
+        /* 我方消息：气泡在左，头像在最右侧 */
+        var av2=c.myAvatar
+          ? '<img class="msg-avatar" src="'+c.myAvatar+'" alt="" onerror="avatarFallback(this)">'
+          : '<div class="msg-avatar"></div>';
+        html+='<div class="msg-row right"><div class="bubble right">'+m.t+'</div>'+av2+'</div>';
+      }
+    });
+  });
+  body.innerHTML=html;
+  document.getElementById('chatTitle').textContent=c.name;
+  body.scrollTop=0;
+  showPage('pageChat');
+}
+function backToWechat(){ showPage('pageWechat'); }
+
+/* 微信列表上滑返回桌面 */
+swipeUp(document.getElementById('pageWechat'),goHome);
+
+/* ==================== 豆瓣评论 ==================== */
+var COMMENTS=[
+  {n:'被基佬吓晕',t:'刚刚',c:'北京',txt:'想秀恩爱和炫富还要铺垫半天 坤续凡尔赛！',like:36},
+  {n:'奶龙代言人',t:'刚刚',c:'上海',txt:'好青涩啊 你两是高中生吗',like:21},
+  {n:'得意黑',t:'刚刚',c:'北京',txt:'我们没怎么上学，我15岁了，我哥哥17岁了',like:8,op:true},
+  {n:'不当给梦女从我做起',t:'1分钟前',c:'广州',txt:'我靠 现在小孩谈恋爱真有钱 想当年我只能给男朋友手腕挂个小皮筋',like:112},
+  {n:'得意黑',t:'1分钟前',c:'北京',txt:'啊 我好像也用不上皮筋这个东西......但是我可以去和哥哥买个情侣手链(^-^)',like:5,op:true,
+    quote:{n:'不当给梦女从我做起',txt:'想当年我只能给男朋友手腕挂个小皮筋'}},
+  {n:'红白高质量用户',t:'3分钟前',c:'深圳',txt:'集美我教你，你俩去找那种q版本动物情头用，然后每天朋友圈发各种秀恩爱照片文案，不过一周就全世界知道你哥哥有对象了，对象是你',like:64},
+  {n:'奶龙代言人',t:'3分钟前',c:'上海',txt:'我看是不到一周就被朋友圈里的人删干净了吧！',like:88},
+  {n:'得意黑',t:'4分钟前',c:'北京',txt:'好的谢谢ヽ(￣▽￣)و我去找找文案',like:3,op:true}
+];
+(function buildComments(){
+  var box=document.getElementById('commentList');
+  var html='';
+  COMMENTS.forEach(function(c){
+    html+='<div class="cmt">';
+    html+='<div class="cmt-ava">'+c.n.slice(0,1)+'</div>';
+    html+='<div class="cmt-main">';
+    html+='<div class="cmt-row1"><span class="cmt-name">'+c.n+'</span>'+
+          (c.op?'<span class="cmt-dot"></span>':'')+
+          '<span class="cmt-time">'+c.t+' · '+c.c+'</span></div>';
+    html+='<div class="cmt-text">'+c.txt+'</div>';
+    if(c.quote){
+      html+='<div class="cmt-quote"><b>'+c.quote.n+'：</b>'+c.quote.txt+'</div>';
+    }
+    html+='<div class="cmt-like">'+
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+          'stroke-width="1.8" stroke-linejoin="round">'+
+          '<path d="M7 10.5v9.5H4.4V10.5z"/>'+
+          '<path d="M7 10.5l4-6.4c1.5 0 2.4 1 2.4 2.4v2.6h4.4a2 2 0 0 1 2 2.4l-1 5.4a2 2 0 0 1-2 1.6H7"/>'+
+          '</svg>'+c.like+'</div>';
+    html+='</div></div>';
+  });
+  box.innerHTML=html;
+})();
+
+/* ==================== 阻止页面滚动穿透 ==================== */
+document.addEventListener('touchmove',function(e){
+  if(e.target.closest('.lock-wallpaper')){ e.preventDefault(); }
+},{passive:false});
+</script>
+</body>
+</html>
